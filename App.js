@@ -11,27 +11,88 @@ import {Platform, StyleSheet, Text, View, Button, TouchableOpacity} from 'react-
 
 
 export default class App extends Component {
+  
+  constructor(){
+    super(),
+    this.state = {
+      resultText: ""
+    }
+    this.operations = ["Del",'+','-','*','/'] 
+  }
+
+  buttonPressed(text){
+    console.log(text)
+
+    if(text == '='){
+      return this.validate() && this.calculateResult()
+    }
+
+    this.setState({
+      resultText: this.state.resultText+text
+    })
+  }
+
+  calculateResult(){
+    const text = this.state.resultText
+    this.setState({
+      calculationText: eval(text)
+    })
+  }
+   validate(){
+     let text = this.state.resultText
+     switch(text.slice(-1)){
+       case '+':
+       case '-':
+       case '*':
+       case '/':
+          return false
+     }
+     return true
+   }
+
+  operate(operation){
+    switch(operation){
+      case 'Del':
+        let text = this.state.resultText.split('')
+        text.pop()
+        this.setState({
+          resultText: text.join('')
+        })
+        break
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+        const lastChar = this.state.resultText.split('').pop()
+        if(this.operations.indexOf(lastChar) > 0) return
+        if(this.state.text = "")return
+           this.setState({
+            resultText: this.state.resultText + operation
+          })
+    }
+  }
+
+  
   render() {
 
     //creating buttons for numbers
     let rows = []
-    let nums = [[1, 2, 3],[4, 5, 6],[7, 8, 9],[0, 0, "="]]
+    let nums = [[1, 2, 3],[4, 5, 6],[7, 8, 9],[".", 0, "="]]
     for(let i=0; i<4; i++){
       let row = []
       for(let j=0; j<3; j++){
-        row.push(<TouchableOpacity style={styles.button}>
+        row.push(<TouchableOpacity key= {nums[i][j]} onPress={() => this.buttonPressed(nums[i][j])} style={styles.button}>
           <Text style={styles.buttonText}>{nums[i][j]}</Text>
         </TouchableOpacity>)
       }
-      rows.push(<View style={styles.row}>{row}</View>)
+      rows.push(<View key= {nums[i]} style={styles.row}>{row}</View>)
     }
 
       //creating buttons for operations
       let operation = []
-      let operations = ['+','-','*','/'] 
-      for(let i=0; i<4; i++){
-        operation.push(<TouchableOpacity style={styles.button}>
-          <Text style={[styles.buttonText, styles.white]}>{operations[i]}</Text>
+      for(let i=0; i<5; i++){
+        operation.push(<TouchableOpacity key={this.operations[i]} style={styles.button} onPress={() => this.operate(this.operations[i])}>
+          <Text style={[styles.buttonText, styles.white]}>{this.operations[i]}</Text>
         </TouchableOpacity>)
       }
 
@@ -39,10 +100,10 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.result}>
-          <Text style={styles.resultText}>11*11</Text>
+          <Text style={styles.resultText}>{this.state.resultText}</Text>
         </View>
         <View style={styles.calculation}>
-          <Text style={styles.calculationText}>121</Text>
+          <Text style={styles.calculationText}>{this.state.calculationText}</Text>
         </View>
         <View style={styles.buttons}>
           <View style={styles.numbers}>
@@ -64,11 +125,11 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 30,
-    color: 'white'
+    color: 'black'
   },
   calculationText: {
     fontSize: 24,
-    color: 'white'
+    color: 'black'
   },
   button: {
     flex: 1,
@@ -78,20 +139,21 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonText:{
-    fontSize: 30
+    fontSize: 30,
+    color: 'white'
   },
   white: {
     color: 'white'
   },
   result: {
     flex: 2,
-    backgroundColor: 'red',
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'flex-end'
   },
   calculation: {
     flex: 1,
-    backgroundColor: '#FFA500',
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'flex-end'
   },
@@ -101,12 +163,12 @@ const styles = StyleSheet.create({
   },
   numbers: {
     flex: 3,
-    backgroundColor: 'yellow'
+    backgroundColor: '#434343',
   },
   operations: {
     flex: 1,
     justifyContent: 'space-around',   
-    backgroundColor: 'black'
+    backgroundColor: '#636363'
   },
   row: {
     flexDirection: 'row',
